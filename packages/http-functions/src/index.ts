@@ -16,9 +16,13 @@ export function all(executions): Promise<any> {
   });
 }
 
-export function pipe<TCreator extends (...args: any[]) => any>(
-  ...executions: TCreator[]
-) {
+type Func = (...args: any[]) => any;
+interface WithMetadata {
+  metadata: any;
+}
+interface TCreator extends Func, WithMetadata {}
+
+export function pipe<T extends TCreator>(...executions: T[]) {
   const execPrams = executions.map(({ metadata }) => ({
     op: metadata.path,
     args: [],
