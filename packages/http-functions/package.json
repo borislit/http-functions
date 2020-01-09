@@ -1,0 +1,46 @@
+{
+  "name": "http-functions",
+  "version": "1.0.13",
+  "license": "MIT",
+  "author": {
+    "name": "Shahar Talmi",
+    "email": "shahart@wix.com"
+  },
+  "main": "dist/src/index.js",
+  "module": "dist/es/src/index.js",
+  "repository": "https://github.com/wix-incubator/http-functions/tree/master/packages/http-functions-config",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "start": "yoshi start",
+    "pretest": "yoshi build",
+    "test": "yoshi test",
+    "posttest": "yoshi lint"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.5",
+    "@types/express": "^4.16.0",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^8.0.0",
+    "chai": "^4.1.2",
+    "chalk": "^2.4.1",
+    "express": "^4.16.3",
+    "jsdom": "^12.0.0",
+    "memory-fs": "^0.4.1",
+    "typescript": "^3.0.3",
+    "webpack": "^4.19.0",
+    "yoshi": "^3.0.0"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.0.0",
+    "@babel/traverse": "^7.0.0",
+    "ansicolor": "^1.1.77",
+    "javascript-serializer": "^1.0.0",
+    "loader-utils": "^1.1.0"
+  }
+}

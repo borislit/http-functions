@@ -9,7 +9,7 @@
   },
   "scripts": {
     "postinstall": "node patch-yoshi.js",
-    "start": "yoshi start",
+    "start": "WEBPACK_RESOLVE_SYMLINKS=true yoshi start",
     "pretest": "yoshi build",
     "test": "yoshi test",
     "posttest": "yoshi lint"
