@@ -39,8 +39,9 @@
   "dependencies": {
     "@babel/parser": "^7.0.0",
     "@babel/traverse": "^7.0.0",
-    "ansicolor": "^1.1.77",
+    "ansicolor": "^1.1.92",
     "javascript-serializer": "^1.0.0",
-    "loader-utils": "^1.1.0"
+    "loader-utils": "^1.1.0",
+    "http-functions-transport": "^1.0.13"
   }
 }

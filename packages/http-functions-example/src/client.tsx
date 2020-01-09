@@ -1,12 +1,15 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { sign } from './backend/signature.web';
+import { sign, getOne, addOne } from './backend/signature.web';
+import { all, pipe } from 'http-functions';
 
 class App extends React.Component {
   state = { signature: '', message: '' };
 
   async sign() {
-    this.setState({ signature: await sign(this.state.message) });
+    this.setState({
+      signature: await pipe(getOne, addOne)(4),
+    });
   }
 
   render() {

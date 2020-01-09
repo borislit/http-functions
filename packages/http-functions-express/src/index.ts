@@ -28,6 +28,36 @@ function defaultContextBuilder(req, res) {
   return { req, res, console: aConsole, logs, stack: true };
 }
 
+const INTERNAL_OPS = ['__ALL__', '__PIPE__'];
+
+function executeFunc(methodPath: string, args, context, files) {
+  const [, fileName, methodName] = methodPath.split('/');
+  const fn = files[fileName] && files[fileName][methodName];
+
+  if (!fn) {
+    context.res
+      .status(404)
+      .send(httpFunctionResult(new Error('no such method'), context));
+  } else if (!Array.isArray(args)) {
+    context.res
+      .status(400)
+      .send(httpFunctionResult(new Error('invalid arguments'), context));
+  } else {
+    return fn
+      .apply(context, fromJSON(args))
+      .then(result => {
+        if (!context.res.headersSent) {
+          return result;
+        }
+      })
+      .catch(result => {
+        if (!context.res.headersSent) {
+          return result;
+        }
+      }) as Promise<any>;
+  }
+}
+
 export function httpFunctions(
   folder,
   test,
@@ -46,34 +76,53 @@ export function httpFunctions(
     );
 
   return async (req, res) => {
-    const [, fileName, methodName] = req.path.split('/');
-    const fn =
-      req.method === 'POST' && files[fileName] && files[fileName][methodName];
     const context = {
       ...defaultContextBuilder(req, res),
       ...contextBuilder(req, res),
     };
-
-    if (!fn) {
-      res
-        .status(404)
-        .send(httpFunctionResult(new Error('no such method'), context));
-    } else if (!Array.isArray(req.body.args)) {
-      res
-        .status(400)
-        .send(httpFunctionResult(new Error('invalid arguments'), context));
-    } else {
-      fn.apply(context, fromJSON(req.body.args))
-        .then(result => {
-          if (!res.headersSent) {
-            res.send(httpFunctionResult(result, context));
-          }
-        })
-        .catch(result => {
-          if (!res.headersSent) {
-            res.status(500).send(httpFunctionResult(result, context));
-          }
-        });
+    if (req.method === 'POST') {
+      if (req.body.args.op && INTERNAL_OPS.includes(req.body.args.op)) {
+        switch (req.body.args.op) {
+          case '__ALL__':
+            res.send(await handleAll(req.body.args.args, context, files));
+            break;
+          case '__PIPE__':
+            res.send(await handlePipe(req.body.args.args, context, files));
+            break;
+          default:
+            res
+              .status(404)
+              .send(httpFunctionResult(new Error('no such method'), context));
+        }
+      } else {
+        executeFunc(req.path, req.body.args, context, files)
+          .then(result => res.send(httpFunctionResult(result, context)))
+          .catch();
+      }
     }
   };
 }
+async function handleAll(funcs: any[], context, files): Promise<any> {
+  return Promise.all(
+    funcs.map(op => executeFunc(`/${op.op}`, op.args, context, files)),
+  ).then(result => httpFunctionResult(result, context));
+}
+
+async function handlePipe(funcs: any[], context, files) {
+  const promise = funcs.reduce((acc, current) => {
+    return acc.then(prevRes => {
+      const execArgs = current.args.length
+        ? current.args
+        : prevRes
+        ? [prevRes]
+        : [];
+      return executeFunc(`/${current.op}`, execArgs, context, files).then(
+        execRes => {
+          return execRes;
+        },
+      );
+    });
+  }, Promise.resolve());
+  await promise.then(result => httpFunctionResult(result, context));
+}
+

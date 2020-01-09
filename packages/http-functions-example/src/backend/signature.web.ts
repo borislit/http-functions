@@ -11,3 +11,10 @@ export async function sign(str: string): Promise<string> {
   hash.update(salt + str);
   return hash.digest('hex');
 }
+
+export async function getOne(x) {
+  return x;
+}
+export async function addOne(x) {
+  return Number(x) + 1;
+}

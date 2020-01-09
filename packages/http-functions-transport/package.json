@@ -1,5 +1,5 @@
 {
-  "name": "http-functions-webpack",
+  "name": "http-functions-transport",
   "version": "1.0.13",
   "license": "MIT",
   "author": {
@@ -8,7 +8,7 @@
   },
   "main": "dist/src/index.js",
   "module": "dist/es/src/index.js",
-  "repository": "https://github.com/wix-incubator/http-functions/tree/master/packages/http-functions-webpack",
+  "repository": "https://github.com/wix-incubator/http-functions/tree/master/packages/http-functions-transport",
   "sideEffects": false,
   "files": [
     "dist"
@@ -30,8 +30,6 @@
     "chai": "^4.1.2",
     "chalk": "^2.4.1",
     "express": "^4.16.3",
-    "http-functions-express": "^1.0.13",
-    "http-functions-transport": "^1.0.13",
     "jsdom": "^12.0.0",
     "memory-fs": "^0.4.1",
     "typescript": "^3.0.3",
@@ -41,9 +39,8 @@
   "dependencies": {
     "@babel/parser": "^7.0.0",
     "@babel/traverse": "^7.0.0",
-    "ansicolor": "^1.1.77",
+    "ansicolor": "^1.1.92",
     "javascript-serializer": "^1.0.0",
-    "http-functions": "^1.0.13",
     "loader-utils": "^1.1.0"
   }
 }

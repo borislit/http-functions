@@ -35,5 +35,10 @@
   },
   "dependencies": {
     "javascript-serializer": "^1.0.0"
+  },
+  "yoshi": {
+    "resolveAlias": {
+      "http-functions-config": "./node_modules"
+    }
   }
 }

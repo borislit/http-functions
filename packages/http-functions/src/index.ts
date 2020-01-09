@@ -1,26 +1,35 @@
-const configuration = {
-  adapter: null,
-};
+import { deferredCalled } from 'http-functions-transport';
 
-export function configure({adapter}) {
-  configuration.adapter = adapter;
-};
+export function all(executions): Promise<any> {
+  executions.forEach(exec => {
+    exec.cancel();
+  });
 
+  const execPrams = executions.map(({ metadata }) => ({
+    op: metadata.path,
+    args: metadata.args,
+  }));
 
-export interface TransportAdapter {
-  get() {
+  return deferredCalled('/_functions', '', {
+    op: '__ALL__',
+    args: execPrams,
+  });
+}
 
-  }
+export function pipe<TCreator extends (...args: any[]) => any>(
+  ...executions: TCreator[]
+) {
+  const execPrams = executions.map(({ metadata }) => ({
+    op: metadata.path,
+    args: [],
+  }));
 
-  add() {
+  return async (...params: Parameters<typeof executions[0]>) => {
+    execPrams[0].args = params;
 
-  }
-
-  delete() {
-
-  }
-
-  update() {
-
-  }
+    return deferredCalled('/_functions', '', {
+      op: '__PIPE__',
+      args: execPrams,
+    });
+  };
 }
